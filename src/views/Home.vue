@@ -9,8 +9,17 @@
     <section v-else>
       <div class="loading" v-if="loading">Loading...</div>
       <div v-else>
-        <Search @keypress-search="searchTerm" :term="term" />
-        <Table :peoples="results.results" />
+        <div class="actions">
+          <Search @keypress-search="searchTerm" :term="term" />
+          <div class="button">
+            <Button @btn-click="prevPage" :text="'Prev'" />
+            <Button @btn-click="nextPage" :text="'Next'" />
+          </div>
+        </div>
+        <div class="table-responsive">
+          <Table @sort-column="sortColumn" :peoples="sortedResults" />
+          <!-- debug: sort={{ currentSort }}, dir={{ currentSortDir }} -->
+        </div>
       </div>
     </section>
   </div>
@@ -21,40 +30,34 @@ import axios from 'axios'
 
 // @ is an alias to /src
 import Search from '@/components/Search.vue'
+import Button from '@/components/Button.vue'
 import Table from '@/components/Table.vue'
 
 export default {
   name: 'Home',
   components: {
     Search,
+    Button,
     Table,
   },
   data() {
     return {
       results: [],
+      term: '',
+      currentSort: 'name',
+      currentSortDir: 'asc',
+      currentPage: 1,
       loading: true,
       errored: false,
-      term: '',
     }
   },
   methods: {
     async fetchPeoples() {
       try {
         const res = await axios.get('https://swapi.dev/api/people/')
-        const data = await res.data
+        const data = await res.data.results
 
         this.results = data
-
-        /*
-        data.map((people) => {
-          let peopleURL = 'https://swapi.dev/api/people/'
-          let peopleId = people.url
-          peopleId = peopleId.replace(peopleURL, '')
-          peopleId = peopleId.slice(0, peopleId.length - 1)
-
-          data = { ...people, id: peopleId }
-        })
-        */
 
         this.loading = false
       } catch (err) {
@@ -67,7 +70,7 @@ export default {
         const res = await axios.get(
           `https://swapi.dev/api/people/?search=${term}`
         )
-        const data = await res.data
+        const data = await res.data.results
         this.results = data
 
         this.loading = false
@@ -75,6 +78,55 @@ export default {
         console.log(err)
         this.errored = true
       }
+    },
+    async nextPage() {
+      try {
+        let page = this.currentPage
+        if (this.currentPage < 9) {
+          page = page + 1
+        }
+
+        const res = await axios.get(
+          'https://swapi.dev/api/people/?page=' + page
+        )
+        const data = await res.data.results
+
+        this.results = data
+        this.currentPage = page
+
+        this.loading = false
+      } catch (err) {
+        console.log(err)
+        this.errored = true
+      }
+    },
+    async prevPage() {
+      try {
+        let page = this.currentPage
+        if (this.currentPage > 1) {
+          page = page - 1
+        }
+
+        const res = await axios.get(
+          'https://swapi.dev/api/people/?page=' + page
+        )
+        const data = await res.data.results
+
+        this.results = data
+        this.currentPage = page
+
+        this.loading = false
+      } catch (err) {
+        console.log(err)
+        this.errored = true
+      }
+    },
+    sortColumn(s) {
+      //if s == current sort, reverse
+      if (s === this.currentSort) {
+        this.currentSortDir = this.currentSortDir === 'asc' ? 'desc' : 'asc'
+      }
+      this.currentSort = s
     },
     clearResults() {
       this.term = null
@@ -88,8 +140,18 @@ export default {
   },
   created() {
     this.results = this.fetchPeoples()
-
     document.addEventListener('keydown', this.handleKeydown)
+  },
+  computed: {
+    sortedResults() {
+      return this.results.sort((a, b) => {
+        let modifier = 1
+        if (this.currentSortDir === 'desc') modifier = -1
+        if (a[this.currentSort] < b[this.currentSort]) return -1 * modifier
+        if (a[this.currentSort] > b[this.currentSort]) return 1 * modifier
+        return 0
+      })
+    },
   },
   watch: {
     searchTerm(term) {
@@ -99,3 +161,11 @@ export default {
   },
 }
 </script>
+
+<style scope>
+.actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+</style>

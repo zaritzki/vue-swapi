@@ -26,7 +26,7 @@ header {
   color: #c8c8c8;
   background-color: #272b30;
 
-  padding: 0.5em 1em;
+  padding: 1em;
 }
 header span {
   display: block;

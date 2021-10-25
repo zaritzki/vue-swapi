@@ -3,12 +3,12 @@
     <table class="table">
       <thead>
         <tr>
-          <th>Name</th>
-          <th>Height</th>
-          <th>Mass</th>
-          <th>Created</th>
-          <th>Edited</th>
-          <th>Planet Name</th>
+          <th @click="$emit('sort-column', 'name')">Name</th>
+          <th @click="$emit('sort-column', 'height')">Height</th>
+          <th @click="$emit('sort-column', 'mass')">Mass</th>
+          <th @click="$emit('sort-column', 'created')">Created</th>
+          <th @click="$emit('sort-column', 'edited')">Edited</th>
+          <th @click="$emit('sort-column', 'name')">Planet Name</th>
         </tr>
       </thead>
       <tbody>
@@ -43,7 +43,7 @@ table th {
   font-size: 0.7em;
   font-weight: 600;
   padding: 0.8em 1em;
-  /* border-bottom: 1px solid rgba(0, 0, 0, 0.6); */
+  cursor: pointer;
 }
 table tr td {
   font-size: 0.8em;
