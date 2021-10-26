@@ -16,7 +16,7 @@
           <SimpleLoader />
         </template>
         <template v-else>
-          <template v-if="contentLoader">
+          <template v-if="numResults">
             <td colspan="6" class="empty">
               No records found...
             </td>
@@ -26,6 +26,7 @@
               :key="people.url"
               v-for="people in peoples"
               :people="people"
+              @open-modal="toggleModal"
             />
           </template>
         </template>
@@ -55,7 +56,7 @@ export default {
 <style>
 .table {
   width: 100%;
-  color: #c8c8c8;
+  color: #eee;
   border-collapse: collapse;
 }
 .table th {
@@ -89,7 +90,7 @@ export default {
 }
 .table a:hover,
 .table th:hover {
-  color: #ffe300;
+  color: #ffe81f;
 }
 
 .table td.empty {

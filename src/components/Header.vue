@@ -28,7 +28,7 @@ header {
   justify-content: space-between;
   align-items: center;
 
-  color: #c8c8c8;
+  color: #eee;
   background-color: #272b30;
 
   padding: 1em;
@@ -49,7 +49,7 @@ header a {
   margin: 0 0.5em;
 }
 header a:hover {
-  color: #ffe300;
+  color: #ffe81f;
 }
 main {
   text-align: center;

@@ -2,11 +2,12 @@
   <transition name="modal-animation">
     <div v-show="modalActive" class="modal">
       <transition name="modal-animation-inner">
-        <div v-show="modalActive" class="modal-inner">
-          <i @click="close" class="far fa-times-circle"></i>
+        <div v-show="modalActive" class="modal-inner text-center">
+          <!-- <i @click="close" class="far fa-times-circle"></i> -->
           <!-- Modal Content -->
           <slot />
-          <button @click="close" type="button">Close</button>
+          <!-- <button @click="close" type="button">Close</button> -->
+          <Button @btn-click="close" :text="'Close'" />
         </div>
       </transition>
     </div>
@@ -14,7 +15,13 @@
 </template>
 
 <script>
+import Button from '@/components/Button.vue'
+
 export default {
+  name: 'Modal',
+  components: {
+    Button,
+  },
   props: ['modalActive'],
   setup(props, { emit }) {
     const close = () => {
@@ -63,16 +70,18 @@ export default {
   position: fixed;
   top: 0;
   left: 0;
-  background-color: rgba(255, 255, 255, 0.7);
+  background-color: rgba(0, 0, 0, 0.7);
 }
 .modal .modal-inner {
   position: relative;
-  max-width: 640px;
-  width: 80%;
+  max-width: 420px;
+  width: 60%;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
     0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  background-color: #fff;
-  padding: 64px 16px;
+  background-color: #000;
+  border: 5px solid rgba(255, 232, 31, 1);
+  padding: 30px 30px 20px 30px;
+  border-radius: 20px;
 }
 .modal .modal-inner i {
   position: absolute;
@@ -83,14 +92,21 @@ export default {
 }
 
 .modal .modal-inner i:hover {
-  color: crimson;
+  color: #ffe81f;
 }
 .modal .modal-inner button {
-  padding: 20px 30px;
+  width: 80px;
+  margin: 30px auto 0 auto;
+  padding: 8px 15px;
   border: none;
-  font-size: 16px;
-  background-color: crimson;
-  color: #fff;
+  font-size: 14px;
+  background-color: #ffe81f;
+  color: #000;
+  text-align: center;
   cursor: pointer;
+}
+
+.modal-content {
+  color: #eee;
 }
 </style>

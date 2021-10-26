@@ -31,16 +31,16 @@ export default {
 
 <style>
 * {
+  padding: 0;
+  margin: 0;
   box-sizing: border-box;
 }
 html,
 body {
-  padding: 0;
-  margin: 0;
   width: 100%;
   height: 100%;
   font-size: 18px;
-  color: #c8c8c8;
+  color: #eee;
   background: #1c1e22 url('./assets/bg.jpg') center;
   background-size: cover;
 }
@@ -48,7 +48,7 @@ body {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
+  color: #eee;
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -76,14 +76,17 @@ body {
   overflow: auto;
 }
 .loading {
-  color: #c8c8c8;
+  color: #eee;
   text-align: center;
 }
 .error-box {
-  color: #c8c8c8;
+  color: #eee;
   background-color: rgba(255, 0, 0, 0.3);
   padding: 1.5em;
   text-align: center;
   border-radius: 5px;
+}
+.text-center {
+  text-align: center;
 }
 </style>

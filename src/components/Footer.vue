@@ -15,7 +15,7 @@ export default {
 
 <style scoped>
 footer {
-  color: #c8c8c8;
+  color: #eee;
   background-color: #272b30;
 
   padding: 0.5em 1em;
@@ -38,6 +38,6 @@ footer a {
   text-decoration: none;
 }
 footer a:hover {
-  color: #ffe300;
+  color: #ffe81f;
 }
 </style>

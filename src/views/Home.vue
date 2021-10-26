@@ -25,12 +25,6 @@
             :contentLoader="contentLoader"
             :numResults="numResults"
           />
-          <Modal @close="toggleModal" :modalActive="modalActive">
-            <div class="modal-content">
-              <h1>This is a Modal Header</h1>
-              <p>This is a modal message</p>
-            </div>
-          </Modal>
           <!-- debug: sort={{ currentSort }}, dir={{ currentSortDir }} -->
         </div>
       </div>
@@ -39,14 +33,12 @@
 </template>
 
 <script>
-import { ref } from 'vue'
 import axios from 'axios'
 
 // @ is an alias to /src
 import Search from '@/components/Search.vue'
 import Button from '@/components/Button.vue'
 import Table from '@/components/Table.vue'
-import Modal from '@/components/Modal.vue'
 import Loader from '@/components/Loader.vue'
 
 export default {
@@ -55,7 +47,6 @@ export default {
     Search,
     Button,
     Table,
-    Modal,
     Loader,
   },
   data() {
@@ -70,13 +61,6 @@ export default {
       contentLoader: false,
       errored: false,
     }
-  },
-  setup() {
-    const modalActive = ref(false)
-    const toggleModal = () => {
-      modalActive.value = !modalActive.value
-    }
-    return { modalActive, toggleModal }
   },
   async created() {
     this.results = await this.fetchData()
@@ -108,7 +92,7 @@ export default {
 
         await this.sleep(500)
 
-        // get all people results and get planning to merge it
+        // get all people results and merge the planet object on the each people
         const loadData = async (peoples) => {
           let data = []
           // peoples.map(async (people) => {})
