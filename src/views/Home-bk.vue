@@ -52,26 +52,39 @@ export default {
     }
   },
   methods: {
-    async fetchData() {
+    async fetchData(value) {
       try {
-        const res = await axios.get('https://swapi.dev/api/people/')
+        const url = 'https://swapi.dev/api/people/'
+        if (value !== '') {
+          if (Number(value)) {
+            const url = `https://swapi.dev/api/people/?page=${value}`
+          } else {
+            const url = `https://swapi.dev/api/people/?search=${value}`
+          }
+        }
+
+        const res = await axios.get(url)
         const data = await res.data.results
 
-        this.results = data
-
-        /*
         const loadData = async () => {
           data.map(async (people) => {
-            const res = await axios.get(people.homeworld)
-            const planet = await res.data
-            const mergedData = { ...people, planet: planet }
-            // console.log(mergedData)
+            const results = await Promise.all([axios.get(people.homeworld)])
 
-            return JSON.parse(JSON.stringify(mergedData))
+            const dataPromises = results.map((result) => {
+              const res = JSON.parse(JSON.stringify(result))
+              const planet = res.data
+              const mergedData = { ...people, planet: planet }
+              // console.log(mergedData)
+
+              return JSON.parse(JSON.stringify(mergedData))
+            })
+
+            const finalData = await Promise.all(dataPromises)
+            this.results = finalData
+            // console.log(this.results)
           })
         }
-        loadData().then((data) => (this.results = data))
-        */
+        loadData()
 
         this.loading = false
       } catch (err) {
@@ -81,11 +94,9 @@ export default {
     },
     async searchTerm(term) {
       try {
-        const res = await axios.get(
-          `https://swapi.dev/api/people/?search=${term}`
-        )
-        const data = await res.data.results
-        this.results = data
+        const results = await this.fetchData(term)
+
+        this.results = results
 
         this.loading = false
       } catch (err) {
@@ -100,12 +111,9 @@ export default {
           page = page + 1
         }
 
-        const res = await axios.get(
-          'https://swapi.dev/api/people/?page=' + page
-        )
-        const data = await res.data.results
+        const results = await this.fetchData(page)
 
-        this.results = data
+        this.results = results
         this.currentPage = page
 
         this.loading = false
@@ -121,12 +129,9 @@ export default {
           page = page - 1
         }
 
-        const res = await axios.get(
-          'https://swapi.dev/api/people/?page=' + page
-        )
-        const data = await res.data.results
+        const results = await this.fetchData(page)
 
-        this.results = data
+        this.results = results
         this.currentPage = page
 
         this.loading = false

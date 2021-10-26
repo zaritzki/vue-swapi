@@ -12,7 +12,7 @@
         </tr>
       </thead>
       <tbody>
-        <People v-for="people in peoples" :people="people" />
+        <People :key="people.url" v-for="people in peoples" :people="people" />
       </tbody>
     </table>
   </div>
@@ -63,12 +63,13 @@ table tr td:last-child {
 table tr:hover td {
   background-color: rgba(50, 54, 58, 0.8);
 }
-footer a {
+table a {
   color: #fff;
   font-weight: normal;
   text-decoration: none;
 }
-footer a:hover {
+table a:hover,
+table th:hover {
   color: #ffe300;
 }
 </style>
