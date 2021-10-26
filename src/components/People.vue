@@ -11,7 +11,9 @@
     <td>
       {{ moment(String(people.edited)).format('Do MMM YYYY hh:mm  A') }}
     </td>
-    <td>--<!--{{ people.planet.name }}--></td>
+    <td @click="toggleModal">
+      {{ people.planet.name }}
+    </td>
   </tr>
 </template>
 

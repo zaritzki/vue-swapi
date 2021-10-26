@@ -7,7 +7,9 @@
       <p><strong>Please try again later</strong></p>
     </section>
     <section v-else>
-      <div class="loading" v-if="loading">Loading...</div>
+      <div class="loading" v-if="pageLoader">
+        <Loader />
+      </div>
       <div v-else>
         <div class="actions">
           <Search @keypress-search="searchTerm" :term="term" />
@@ -17,7 +19,18 @@
           </div>
         </div>
         <div class="table-responsive">
-          <Table @sort-column="sortColumn" :peoples="sortedResults" />
+          <Table
+            @sort-column="sortColumn"
+            :peoples="sortedResults"
+            :contentLoader="contentLoader"
+            :numResults="numResults"
+          />
+          <Modal @close="toggleModal" :modalActive="modalActive">
+            <div class="modal-content">
+              <h1>This is a Modal Header</h1>
+              <p>This is a modal message</p>
+            </div>
+          </Modal>
           <!-- debug: sort={{ currentSort }}, dir={{ currentSortDir }} -->
         </div>
       </div>
@@ -26,12 +39,15 @@
 </template>
 
 <script>
+import { ref } from 'vue'
 import axios from 'axios'
 
 // @ is an alias to /src
 import Search from '@/components/Search.vue'
 import Button from '@/components/Button.vue'
 import Table from '@/components/Table.vue'
+import Modal from '@/components/Modal.vue'
+import Loader from '@/components/Loader.vue'
 
 export default {
   name: 'Home',
@@ -39,6 +55,8 @@ export default {
     Search,
     Button,
     Table,
+    Modal,
+    Loader,
   },
   data() {
     return {
@@ -47,33 +65,74 @@ export default {
       currentSort: 'name',
       currentSortDir: 'asc',
       currentPage: 1,
-      loading: true,
+      numResults: 0,
+      pageLoader: true,
+      contentLoader: false,
       errored: false,
     }
   },
+  setup() {
+    const modalActive = ref(false)
+    const toggleModal = () => {
+      modalActive.value = !modalActive.value
+    }
+    return { modalActive, toggleModal }
+  },
+  async created() {
+    this.results = await this.fetchData()
+    document.addEventListener('keydown', this.handleKeydown)
+  },
   methods: {
-    async fetchData() {
+    sleep(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms))
+    },
+    async fetchData(value) {
       try {
-        const res = await axios.get('https://swapi.dev/api/people/')
-        const data = await res.data.results
+        // set url
+        var url = 'https://swapi.dev/api/people'
+        if (value !== undefined && value !== '') {
+          if (Number(value)) {
+            url = `https://swapi.dev/api/people/?page=${value}`
+          } else {
+            url = `https://swapi.dev/api/people/?search=${value}`
+          }
+        }
 
-        this.results = data
+        // call api
+        const res = await axios.get(url)
+        const resData = await res.data
+        const peoples = resData.results
 
-        /*
-        const loadData = async () => {
-          data.map(async (people) => {
+        // set the results count
+        this.numResults = resData.count
+
+        await this.sleep(500)
+
+        // get all people results and get planning to merge it
+        const loadData = async (peoples) => {
+          let data = []
+          // peoples.map(async (people) => {})
+          for (let people of peoples) {
             const res = await axios.get(people.homeworld)
             const planet = await res.data
+
+            // mergin planet with people object.
             const mergedData = { ...people, planet: planet }
             // console.log(mergedData)
 
-            return JSON.parse(JSON.stringify(mergedData))
-          })
+            data.push(mergedData)
+            await this.sleep(500)
+          }
+          return data
         }
-        loadData().then((data) => (this.results = data))
-        */
 
-        this.loading = false
+        // call loadData
+        loadData(peoples).then((data) => {
+          this.results = data
+
+          this.pageLoader = false
+          this.contentLoader = false
+        })
       } catch (err) {
         console.error(err)
         this.errored = true
@@ -81,13 +140,11 @@ export default {
     },
     async searchTerm(term) {
       try {
-        const res = await axios.get(
-          `https://swapi.dev/api/people/?search=${term}`
-        )
-        const data = await res.data.results
-        this.results = data
+        // set table loader
+        this.contentLoader = true
 
-        this.loading = false
+        // call fetchData
+        const results = await this.fetchData(term)
       } catch (err) {
         console.error(err)
         this.errored = true
@@ -99,16 +156,14 @@ export default {
         if (this.currentPage < 9) {
           page = page + 1
         }
+        // set table loader
+        this.contentLoader = true
 
-        const res = await axios.get(
-          'https://swapi.dev/api/people/?page=' + page
-        )
-        const data = await res.data.results
+        // call fetchData
+        const results = await this.fetchData(page)
 
-        this.results = data
+        // set the current page
         this.currentPage = page
-
-        this.loading = false
       } catch (err) {
         console.error(err)
         this.errored = true
@@ -120,19 +175,29 @@ export default {
         if (this.currentPage > 1) {
           page = page - 1
         }
+        // set table loader
+        this.contentLoader = true
 
-        const res = await axios.get(
-          'https://swapi.dev/api/people/?page=' + page
-        )
-        const data = await res.data.results
+        // call fetchData
+        const results = await this.fetchData(page)
 
-        this.results = data
+        // set the current page
         this.currentPage = page
-
-        this.loading = false
       } catch (err) {
         console.error(err)
         this.errored = true
+      }
+    },
+    async clearResults() {
+      // set table loader
+      this.contentLoader = true
+
+      this.term = null
+      this.results = await this.fetchData()
+    },
+    async handleKeydown(e) {
+      if (e.keyCode === 27) {
+        await this.clearResults() // esc
       }
     },
     sortColumn(s) {
@@ -142,19 +207,6 @@ export default {
       }
       this.currentSort = s
     },
-    clearResults() {
-      this.term = null
-      this.results = this.fetchData()
-    },
-    handleKeydown(e) {
-      if (e.keyCode === 27) {
-        this.clearResults() // esc
-      }
-    },
-  },
-  created() {
-    this.results = this.fetchData()
-    document.addEventListener('keydown', this.handleKeydown)
   },
   computed: {
     sortedResults() {

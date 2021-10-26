@@ -1,13 +1,17 @@
 <template>
   <section>
-    <Header title="Vue with SWAPI" />
-    <main>
-      <img src="@/assets/logo.png" class="logo" alt="SWAPI" />
-    </main>
-    <div class="container">
-      <router-view></router-view>
+    <!-- The video -->
+    <video autoplay muted loop id="video-background">
+      <source src="@/assets/video.mp4" type="video/mp4" />
+    </video>
+
+    <div class="app">
+      <Header title="Vue with SWAPI" />
+      <div class="container">
+        <router-view></router-view>
+      </div>
+      <Footer />
     </div>
-    <Footer />
   </section>
 </template>
 
@@ -50,10 +54,18 @@ body {
   width: 100%;
   height: 100%;
 }
-main {
-  text-align: center;
-  flex: 1 0 auto;
-  margin-top: 1em;
+.app {
+  position: relative;
+  z-index: 2;
+}
+#video-background {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  min-width: 100%;
+  min-height: 100%;
+  z-index: 1;
+  opacity: 0.3;
 }
 .container {
   width: 80%;
@@ -62,9 +74,6 @@ main {
   padding: 1.5em;
   margin: 1em auto 1.5em auto;
   overflow: auto;
-}
-.logo {
-  max-width: 200px;
 }
 .loading {
   color: #c8c8c8;

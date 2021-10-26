@@ -18,7 +18,7 @@ export default {
 }
 </script>
 
-<style scope>
+<style scoped>
 .btn {
   display: inline-block;
   color: #c8c8c8;

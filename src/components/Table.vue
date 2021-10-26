@@ -8,11 +8,27 @@
           <th @click="$emit('sort-column', 'mass')">Mass</th>
           <th @click="$emit('sort-column', 'created')">Created</th>
           <th @click="$emit('sort-column', 'edited')">Edited</th>
-          <th @click="$emit('sort-column', 'name')">Planet Name</th>
+          <th @click="$emit('sort-column', 'planet.name')">Planet Name</th>
         </tr>
       </thead>
       <tbody>
-        <People :key="people.url" v-for="people in peoples" :people="people" />
+        <template v-if="contentLoader">
+          <SimpleLoader />
+        </template>
+        <template v-else>
+          <template v-if="contentLoader">
+            <td colspan="6" class="empty">
+              No records found...
+            </td>
+          </template>
+          <template v-else>
+            <People
+              :key="people.url"
+              v-for="people in peoples"
+              :people="people"
+            />
+          </template>
+        </template>
       </tbody>
     </table>
   </div>
@@ -21,55 +37,63 @@
 <script>
 // @ is an alias to /src
 import People from '@/components/People.vue'
+import SimpleLoader from '@/components/SimpleLoader.vue'
 
 export default {
   name: 'Table',
   components: {
     People,
+    SimpleLoader,
   },
   props: {
     peoples: Array,
+    contentLoader: Boolean,
   },
 }
 </script>
 
-<style scope>
-table {
+<style>
+.table {
   width: 100%;
   color: #c8c8c8;
   border-collapse: collapse;
 }
-table th {
+.table th {
   font-size: 0.7em;
   font-weight: 600;
   padding: 0.8em 1em;
   cursor: pointer;
 }
-table tr td {
+.table tr td {
   font-size: 0.8em;
   padding: 1.2em;
   background-color: rgba(41, 44, 48, 0.5);
   border-bottom: 5px solid rgba(0, 0, 0, 0.8);
 }
-table tr:last-child td {
+.table tr:last-child td {
   border-bottom: 0 none;
 }
-table tr td:first-child {
+.table tr td:first-child {
   border-radius: 5px 0 0 5px;
 }
-table tr td:last-child {
+.table tr td:last-child {
   border-radius: 0 5px 5px 0;
 }
-table tr:hover td {
+.table tr:hover td {
   background-color: rgba(50, 54, 58, 0.8);
 }
-table a {
+.table a {
   color: #fff;
   font-weight: normal;
   text-decoration: none;
 }
-table a:hover,
-table th:hover {
+.table a:hover,
+.table th:hover {
   color: #ffe300;
+}
+
+.table td.empty {
+  margin: 80px;
+  text-align: center;
 }
 </style>

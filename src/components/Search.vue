@@ -1,6 +1,6 @@
 <template>
   <input
-    @keypress="$emit('keypress-search', term)"
+    @keypress.enter="$emit('keypress-search', term)"
     v-model="term"
     type="text"
     name="search"
@@ -17,7 +17,7 @@ export default {
 }
 </script>
 
-<style scope>
+<style scoped>
 input {
   color: #c8c8c8;
   width: 40%;

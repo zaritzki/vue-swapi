@@ -1,11 +1,16 @@
 <template>
-  <header>
-    <span>{{ title }}</span>
-    <div id="nav">
-      <router-link to="/">Home</router-link>
-      <router-link to="/about">About</router-link>
-    </div>
-  </header>
+  <section>
+    <header>
+      <span>{{ title }}</span>
+      <div id="nav">
+        <router-link to="/">Home</router-link>
+        <router-link to="/about">About</router-link>
+      </div>
+    </header>
+    <main>
+      <img src="@/assets/logo.png" class="logo" alt="SWAPI" />
+    </main>
+  </section>
 </template>
 
 <script>
@@ -17,7 +22,7 @@ export default {
 }
 </script>
 
-<style scope>
+<style scoped>
 header {
   display: flex;
   justify-content: space-between;
@@ -45,5 +50,24 @@ header a {
 }
 header a:hover {
   color: #ffe300;
+}
+main {
+  text-align: center;
+  flex: 1 0 auto;
+  margin-top: 1em;
+}
+.logo {
+  max-width: 200px;
+  animation: MoveUpDown 2s linear infinite;
+  position: relative;
+}
+@keyframes MoveUpDown {
+  0%,
+  100% {
+    bottom: 0;
+  }
+  50% {
+    bottom: 8px;
+  }
 }
 </style>
