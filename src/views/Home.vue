@@ -19,12 +19,14 @@
           </div>
         </div>
         <div class="table-responsive">
-          <Table
-            @sort-column="sortColumn"
-            :peoples="sortedResults"
-            :contentLoader="contentLoader"
-            :numResults="numResults"
-          />
+          <keep-alive>
+            <Table
+              @sort-column="sortColumn"
+              :peoples="sortedResults"
+              :contentLoader="contentLoader"
+              :numResults="numResults"
+            />
+          </keep-alive>
           <!-- debug: sort={{ currentSort }}, dir={{ currentSortDir }} -->
         </div>
       </div>
@@ -73,7 +75,7 @@ export default {
     async fetchData(value) {
       try {
         // set url
-        var url = 'https://swapi.dev/api/people'
+        let url = 'https://swapi.dev/api/people'
         if (value !== undefined && value !== '') {
           if (Number(value)) {
             url = `https://swapi.dev/api/people/?page=${value}`
@@ -100,7 +102,7 @@ export default {
             const res = await axios.get(people.homeworld)
             const planet = await res.data
 
-            // mergin planet with people object.
+            // merging planet with people object.
             const mergedData = { ...people, planet: planet }
             // console.log(mergedData)
 
@@ -137,16 +139,13 @@ export default {
     async nextPage() {
       try {
         let page = this.currentPage
-        if (this.currentPage < 9) {
-          page = page + 1
-        }
+        page++
+
         // set table loader
         this.contentLoader = true
 
         // call fetchData
         const results = await this.fetchData(page)
-
-        // set the current page
         this.currentPage = page
       } catch (err) {
         console.error(err)
@@ -156,16 +155,13 @@ export default {
     async prevPage() {
       try {
         let page = this.currentPage
-        if (this.currentPage > 1) {
-          page = page - 1
-        }
+        page--
+
         // set table loader
         this.contentLoader = true
 
         // call fetchData
         const results = await this.fetchData(page)
-
-        // set the current page
         this.currentPage = page
       } catch (err) {
         console.error(err)
@@ -212,7 +208,7 @@ export default {
 }
 </script>
 
-<style scope>
+<style scoped>
 .actions {
   display: flex;
   justify-content: space-between;

@@ -70,7 +70,7 @@ body {
 .container {
   width: 80%;
   max-width: 1200px;
-  min-height: 300px;
+  min-height: 680px;
   padding: 1.5em;
   margin: 1em auto 1.5em auto;
   overflow: auto;
